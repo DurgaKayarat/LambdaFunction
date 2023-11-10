@@ -29,7 +29,7 @@ jobs:
       - name: Check if Lambda function exists
         id: check-lambda
         run: |
-          if aws lambda get-function --function-name YourFunctionName > /dev/null 2>&1; then
+          if aws lambda get-function --function-name test3 > /dev/null 2>&1; then
             echo "::set-output name=function_exists::true"
           else
             echo "::set-output name=function_exists::false"
