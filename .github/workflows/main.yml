@@ -12,6 +12,7 @@ jobs:
     runs-on: [ ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
+      
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -20,9 +21,22 @@ jobs:
           aws-region: us-west-2
           role-duration-seconds: 1200
           role-session-name: MySessionName
+          
       - name: zip Lambda Function
         run: |
           zip -r9 function.zip index.js
-      - name: AWS Deploy
+          
+      - name: Check if Lambda function exists
+        id: check-lambda
+        run: |
+          aws lambda get-function --function-name test3 > /dev/null 2>&1 || echo "::set-output name=function_exists::false"
+          
+      - name: Update Lambda function if it exists
+        if: steps.check-lambda.outputs.function_exists == 'false'
+        run: |
+          aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip       
+          
+      - name:  Create Lambda function if it does not exists
+        if: steps.check-lambda.outputs.function_exists != 'false'
         run: |
           aws lambda create-function --function-name test3 --zip-file fileb://function.zip --handler index.handler --runtime nodejs18.x --role arn:aws:iam::598920385522:role/role-lambdafullaccess
