@@ -39,6 +39,8 @@ jobs:
         run: |
           if [[ ${{ steps.check-lambda.outputs.function_exists }} == 'false' ]]; then
             aws lambda create-function --function-name test3 --zip-file fileb://function.zip --handler index.handler --runtime nodejs18.x --role arn:aws:iam::598920385522:role/role-lambdafullaccess
+            echo "Creating"
           else
-            aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip            
+            aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip 
+            echo "Updating"
           fi
