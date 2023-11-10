@@ -29,14 +29,21 @@ jobs:
       - name: Check if Lambda function exists
         id: check-lambda
         run: |
-          aws lambda get-function --function-name test3 > /dev/null 2>&1 || echo "::set-output name=function_exists::false"
+          if aws lambda get-function --function-name YourFunctionName > /dev/null 2>&1; then
+            echo "::set-output name=function_exists::true"
+          else
+            echo "::set-output name=function_exists::false"
+          fi
           
       - name: Update Lambda function if it exists
         if: steps.check-lambda.outputs.function_exists == 'false'
         run: |
           aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip       
           
-      - name:  Create Lambda function if it does not exists
-        if: steps.check-lambda.outputs.function_exists != 'false'
+      - name: Update or create Lambda function
         run: |
-          aws lambda create-function --function-name test3 --zip-file fileb://function.zip --handler index.handler --runtime nodejs18.x --role arn:aws:iam::598920385522:role/role-lambdafullaccess
+          if [[ ${{ steps.check-lambda.outputs.function_exists }} == 'false' ]]; then
+            aws lambda create-function --function-name test3 --zip-file fileb://function.zip --handler index.handler --runtime nodejs18.x --role arn:aws:iam::598920385522:role/role-lambdafullaccess
+          else
+            aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip            
+          fi
