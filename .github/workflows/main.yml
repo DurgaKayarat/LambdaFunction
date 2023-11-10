@@ -22,7 +22,7 @@ jobs:
           role-session-name: MySessionName
       - name: zip Lambda Function
         run: |
-          zip -r9 lambda.zip lambdaFunction.py
+          zip -r9 function.zip index.js
       - name: AWS Deploy
         run: |
           aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip --handler index.handler --runtime nodejs18.x --role arn:aws:iam::598920385522:role/role-lambdafullaccess
