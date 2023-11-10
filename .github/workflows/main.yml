@@ -33,12 +33,7 @@ jobs:
             echo "::set-output name=function_exists::true"
           else
             echo "::set-output name=function_exists::false"
-          fi
-          
-      - name: Update Lambda function if it exists
-        if: steps.check-lambda.outputs.function_exists == 'false'
-        run: |
-          aws lambda update-function-code --function-name test3 --zip-file fileb://function.zip       
+          fi     
           
       - name: Update or create Lambda function
         run: |
